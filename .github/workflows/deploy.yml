@@ -52,6 +52,7 @@ jobs:
         env:
           PROD: ${{ github.event_name != 'pull_request' && '--prod' || '' }}
         run: |
-          url=$(vercel deploy --prebuilt $PROD --token=${{ secrets.VERCEL_TOKEN }})
+          # --archive=tgz : un seul fichier envoyé (limite Vercel : 40 000 fichiers / jour)
+          url=$(vercel deploy --prebuilt --archive=tgz $PROD --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Déployé : $url" >> "$GITHUB_STEP_SUMMARY"
