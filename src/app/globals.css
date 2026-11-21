@@ -318,3 +318,47 @@ body {
 .dark .fiche img {
   background: #ffffff;
 }
+
+/* ---------- Drapeau du hero (voir src/components/hero-flag.tsx) ---------- */
+/* Animations en transform uniquement : compositeur GPU, ni layout ni paint. */
+.flag-folds {
+  position: absolute;
+  inset: 0 0 0 -320px; /* une période de plus, à gauche, pour boucler sans saut */
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(0 0 0 / 0.16) 0,
+    rgb(255 255 255 / 0.1) 96px,
+    rgb(0 0 0 / 0.02) 176px,
+    rgb(0 0 0 / 0.22) 256px,
+    rgb(0 0 0 / 0.16) 320px
+  );
+}
+[data-wind] .flag-folds {
+  will-change: transform;
+  animation: flag-folds 7s linear infinite;
+}
+/* Onde qui remonte le long des bords : défilement d'une période (350px = WAVE) */
+[data-wind] .flag-wave {
+  will-change: transform;
+  animation: flag-wave 4.3s linear infinite; /* durée non multiple de 7s : la répétition ne se remarque pas */
+}
+[data-wind="paused"] .flag-folds,
+[data-wind="paused"] .flag-wave {
+  animation-play-state: paused;
+}
+@keyframes flag-folds {
+  to {
+    transform: translate3d(320px, 0, 0);
+  }
+}
+@keyframes flag-wave {
+  to {
+    transform: translate3d(0, -350px, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flag-folds,
+  .flag-wave {
+    animation: none !important;
+  }
+}
