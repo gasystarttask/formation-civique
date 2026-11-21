@@ -1,4 +1,5 @@
 import data from "@/data/content.json";
+import { FRISE_ID, friseText } from "@/data/frise-regimes";
 
 export type Resource = { label: string; href: string };
 
@@ -12,6 +13,8 @@ export type Fiche = {
   objectives: string[];
   resources: Resource[];
   html: string;
+  /** Fiche récapitulative créée par l'app (pas une fiche officielle) */
+  kind?: "frise";
 };
 
 type RawNode = {
@@ -47,7 +50,23 @@ export const slugify = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-const fiches = data.fiches as Record<string, Fiche>;
+const fiches = { ...(data.fiches as Record<string, Fiche>) };
+
+/** Thématique de la Journée 2 qui reçoit la frise en étape 16. */
+const FRISE_TOPIC = "Les régimes politiques depuis 1789";
+const FRISE_SOURCE =
+  "https://formation-civique.interieur.gouv.fr/fiches-par-thematiques/histoire-geographie-et-culture/les-regimes-politiques-depuis-1789/";
+fiches[FRISE_ID] = {
+  id: FRISE_ID,
+  kind: "frise",
+  title: "Frise chronologique : les régimes politiques",
+  description: "Récapitulatif des 15 étapes : les dates et les faits marquants, des Mérovingiens à la Vème République.",
+  source: FRISE_SOURCE,
+  objectivesTitle: "Objectif de la fiche",
+  objectives: ["Revoir en un coup d’œil la succession des régimes politiques et leurs dates clés."],
+  resources: [],
+  html: "",
+};
 
 /** HTML -> texte brut (entités courantes décodées). */
 const toText = (html: string) =>
@@ -65,7 +84,8 @@ const WORDS_PER_MINUTE = 200;
 
 /** Durée moyenne de lecture d'une fiche, en minutes (arrondie, minimum 1). */
 export function readingMinutes(f: Fiche) {
-  const text = [f.title, f.description ?? "", ...f.objectives, toText(f.html.replace(/<[^>]+>/g, " "))].join(" ");
+  const body = f.kind === "frise" ? friseText : toText(f.html.replace(/<[^>]+>/g, " "));
+  const text = [f.title, f.description ?? "", ...f.objectives, body].join(" ");
   const words = text.split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / WORDS_PER_MINUTE));
 }
@@ -97,7 +117,13 @@ export const days: Day[] = (data.days as (RawNode & { slug: string })[]).map((d,
       title: t.title,
       description: t.description,
       // Un sous-thème peut directement être une fiche
-      fiches: t.ficheId ? [toRef(t)] : (t.children ?? []).filter((f) => f.ficheId).map(toRef),
+      fiches: t.ficheId
+        ? [toRef(t)]
+        : [
+            ...(t.children ?? []).filter((f) => f.ficheId).map(toRef),
+            // Étape récapitulative ajoutée à la fin de la thématique
+            ...(t.title === FRISE_TOPIC ? [toRef({ title: "", ficheId: FRISE_ID })] : []),
+          ],
     })),
   }));
   const ficheIds = sections.flatMap((s) => s.topics.flatMap((t) => t.fiches.map((f) => f.id)));

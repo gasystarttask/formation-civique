@@ -6,7 +6,8 @@ import { PageSkeleton } from "@/components/skeleton";
 import { ArrowLeft, ArrowRight, LinkExternal01, Target04 } from "@untitledui/icons";
 import { AutoMarkRead, Progress, ReadMarker, ReadToggle } from "@/components/progress";
 import { Badge, Breadcrumbs, cx, FeaturedIcon, ReadingTime } from "@/components/ui";
-import { allFicheIds, getContext, getFiche, getNeighbours, readingMinutes } from "@/lib/content";
+import { allFicheIds, getContext, getFiche, getNeighbours, meta, readingMinutes } from "@/lib/content";
+import { Frise } from "@/components/frise";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -56,6 +57,11 @@ async function FicheContent({ params }: Props) {
           </div>
           <h1 className="mt-4 text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">{fiche.title}</h1>
           {fiche.description && <p className="mt-3 text-lg text-gray-600">{fiche.description}</p>}
+          {fiche.kind === "frise" && (
+            <p className="mt-3 text-sm text-gray-500">
+              Fiche récapitulative réalisée à partir des {topic.fiches.length - 1} fiches officielles de la thématique.
+            </p>
+          )}
 
           {fiche.objectives.length > 0 && (
             <section className="mt-8 flex gap-4 rounded-xl border border-gray-200 bg-gray-50 p-5">
@@ -77,7 +83,14 @@ async function FicheContent({ params }: Props) {
             </section>
           )}
 
-          <div className="fiche mt-10" dangerouslySetInnerHTML={{ __html: fiche.html }} />
+          {fiche.kind === "frise" ? (
+            <Frise
+              numbers={Object.fromEntries(topic.fiches.map((f, i) => [f.id, i + 1]))}
+              end={new Date(meta.scrapedAt).getFullYear()}
+            />
+          ) : (
+            <div className="fiche mt-10" dangerouslySetInnerHTML={{ __html: fiche.html }} />
+          )}
 
           {fiche.resources.length > 0 && (
             <section className="mt-12 rounded-xl border border-gray-200 p-5">
@@ -109,7 +122,7 @@ async function FicheContent({ params }: Props) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700"
             >
-              Voir la fiche officielle
+              {fiche.kind === "frise" ? "Voir la thématique officielle" : "Voir la fiche officielle"}
               <LinkExternal01 className="size-4" aria-hidden />
             </a>
           </div>

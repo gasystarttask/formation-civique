@@ -45,6 +45,24 @@
   --color-success-600: #079455;
   --color-success-700: #067647;
 
+  --color-warning-50: #fffaeb;
+  --color-warning-100: #fef0c7;
+  --color-warning-200: #fedf89;
+  --color-warning-500: #f79009;
+  --color-warning-700: #b54708;
+
+  --color-purple-50: #f4f3ff;
+  --color-purple-100: #ebe9fe;
+  --color-purple-200: #d9d6fe;
+  --color-purple-500: #7a5af8;
+  --color-purple-700: #5925dc;
+
+  --color-error-50: #fef3f2;
+  --color-error-100: #fee4e2;
+  --color-error-200: #fecdca;
+  --color-error-500: #f04438;
+  --color-error-700: #b42318;
+
   --shadow-xs: 0px 1px 2px rgba(10, 13, 18, 0.05);
   --shadow-sm: 0px 1px 3px rgba(10, 13, 18, 0.1), 0px 1px 2px -1px rgba(10, 13, 18, 0.1);
   --shadow-md: 0px 4px 6px -1px rgba(10, 13, 18, 0.1), 0px 2px 4px -2px rgba(10, 13, 18, 0.06);
@@ -83,6 +101,21 @@
   --color-success-100: #074d31;
   --color-success-200: #085d3a;
   --color-success-700: #75e0a7;
+
+  --color-warning-50: #4e1d09;
+  --color-warning-100: #7a2e0e;
+  --color-warning-200: #93370d;
+  --color-warning-700: #fec84b;
+
+  --color-purple-50: #27115f;
+  --color-purple-100: #3e1c96;
+  --color-purple-200: #4a1fb8;
+  --color-purple-700: #bdb4fe;
+
+  --color-error-50: #55160c;
+  --color-error-100: #7a271a;
+  --color-error-200: #912018;
+  --color-error-700: #fda29b;
 
   --shadow-xs: 0px 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-sm: 0px 1px 3px rgba(0, 0, 0, 0.4), 0px 1px 2px -1px rgba(0, 0, 0, 0.4);
