@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "@untitledui/icons";
 import { GlobalProgress, Progress } from "@/components/progress";
+import { HeroFlag } from "@/components/hero-flag";
 import { Search } from "@/components/search";
 import { Badge, FeaturedIcon } from "@/components/ui";
 import { days, searchIndex } from "@/lib/content";
@@ -9,21 +10,19 @@ import { dayIcons } from "@/lib/icons";
 export default function Home() {
   return (
     <main>
-      <section className="border-b border-gray-200 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-20">
-          <Badge color="brand">{searchIndex.length} fiches · {days.length} journées</Badge>
-          <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-gray-900 md:text-5xl">
-            Révisez la formation civique, journée par journée
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-gray-600 md:text-xl">
-            Retrouvez toutes les fiches de révision, suivez votre progression et passez d’une fiche à la suivante
-            sans vous perdre.
-          </p>
-          <div className="mt-8">
-            <Search entries={searchIndex} variant="hero" />
-          </div>
+      <HeroFlag>
+        <Badge color="brand">{searchIndex.length} fiches · {days.length} journées</Badge>
+        <h1 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-white md:text-5xl">
+          Révisez la formation civique, journée par journée
+        </h1>
+        <p className="mt-4 max-w-xl text-lg text-white/80 md:text-xl">
+          Retrouvez toutes les fiches de révision, suivez votre progression et passez d’une fiche à la suivante
+          sans vous perdre.
+        </p>
+        <div className="mt-8">
+          <Search entries={searchIndex} variant="hero" />
         </div>
-      </section>
+      </HeroFlag>
 
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-16">
         <GlobalProgress days={days.map(({ slug, title, ficheIds }) => ({ slug, title, ficheIds }))} />
