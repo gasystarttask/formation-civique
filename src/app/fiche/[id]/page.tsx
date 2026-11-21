@@ -8,6 +8,8 @@ import { AutoMarkRead, Progress, ReadMarker, ReadToggle } from "@/components/pro
 import { Badge, Breadcrumbs, cx, FeaturedIcon, ReadingTime } from "@/components/ui";
 import { allFicheIds, getContext, getFiche, getNeighbours, meta, readingMinutes } from "@/lib/content";
 import { Frise } from "@/components/frise";
+import { TopicFeedback } from "@/components/feedback";
+import { topicKey } from "@/lib/feedback";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -114,6 +116,9 @@ async function FicheContent({ params }: Props) {
           )}
 
           <AutoMarkRead id={fiche.id} />
+          {index === topic.fiches.length - 1 && (
+            <TopicFeedback topic={topicKey(day.slug, section.slug, topic.slug)} title={topic.title} />
+          )}
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-6">
             <ReadToggle id={fiche.id} />
             <a

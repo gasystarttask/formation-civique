@@ -32,6 +32,28 @@ Pour forcer un nouveau téléchargement, supprimez `.cache/` avant `npm run scra
 - `src/components/` : composants UI (Badge, FeaturedIcon, Breadcrumbs, boutons, recherche, progression).
 - `src/app/globals.css` : tokens Untitled UI (couleurs, ombres) et style du contenu des fiches.
 
+## Avis de fin de thématique
+
+À la fin de la dernière fiche d'une thématique, un modal demande un avis anonyme
+(pas satisfait / mitigé / satisfait). Il ne s'affiche qu'une fois par thématique.
+
+- `POST /api/feedback` `{ "topic": "journee-1/section/thematique", "rating": "triste" | "mitige" | "content" }`
+- `GET /api/feedback` : totaux par thématique.
+
+Stockage : [Upstash Redis](https://upstash.com/), un seul hash `feedback`
+(champs `thématique|avis` et `_quota:AAAA-MM`).
+
+Pensé pour l'offre gratuite Upstash (500 000 commandes / mois, 256 Mo) :
+
+- 2 commandes par avis (pipeline) ; lecture des totaux : 1 commande, en cache 1 h ;
+- plafond `FEEDBACK_MONTHLY_LIMIT` (150 000 avis = 300 000 commandes par défaut) :
+  au-delà, les avis sont ignorés (réponse 202) jusqu'au mois suivant ;
+- 40 avis max par IP et par heure (en mémoire, sans commande Redis) ;
+- un avis par thématique et par navigateur ; données : quelques Ko.
+Sur Vercel : **Storage → Marketplace → Upstash Redis → Connect Project** ; les variables
+`KV_REST_API_URL` / `KV_REST_API_TOKEN` sont créées automatiquement. En local, copiez
+`.env.example` en `.env.local` ; sans variables, les avis sont gardés en mémoire.
+
 ## Licence
 
 - Code : [MIT](LICENSE).
