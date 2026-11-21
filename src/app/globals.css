@@ -323,7 +323,9 @@ body {
 /* Animations en transform uniquement : compositeur GPU, ni layout ni paint. */
 .flag-folds {
   position: absolute;
-  inset: 0 0 0 -320px; /* une période de plus, à gauche, pour boucler sans saut */
+  /* Débord : une période (320px) à gauche pour boucler, + marge pour l'inclinaison */
+  inset: 0 -480px 0 -800px;
+  transform: skewX(-18deg); /* plis obliques */
   background: repeating-linear-gradient(
     90deg,
     rgb(0 0 0 / 0.16) 0,
@@ -347,8 +349,11 @@ body {
   animation-play-state: paused;
 }
 @keyframes flag-folds {
+  from {
+    transform: skewX(-18deg) translate3d(0, 0, 0);
+  }
   to {
-    transform: translate3d(320px, 0, 0);
+    transform: skewX(-18deg) translate3d(320px, 0, 0);
   }
 }
 @keyframes flag-wave {
