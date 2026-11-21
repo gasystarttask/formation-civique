@@ -33,11 +33,24 @@ const topics = new Map(
   ),
 );
 
-const configured = Boolean(
-  (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL) &&
-    (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN),
-);
-const redis = configured ? Redis.fromEnv({ enableTelemetry: false }) : null;
+/**
+ * Client créé à la première requête (jamais au chargement du module, donc jamais
+ * pendant `next build`). Pendant le build, `vercel pull` remplace les variables
+ * « Sensitive » par "[SENSITIVE]" : une URL non https est donc ignorée.
+ */
+let client: Redis | null | undefined;
+function getRedis(): Redis | null {
+  if (client !== undefined) return client;
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  if (url?.startsWith("https://") && token) {
+    client = new Redis({ url, token, enableTelemetry: false });
+  } else {
+    if (url || token) console.warn("[feedback] configuration Upstash invalide : stockage en mémoire");
+    client = null;
+  }
+  return client;
+}
 
 /**
  * Mois pour lequel cette instance sait déjà que le plafond est atteint :
@@ -80,6 +93,7 @@ export async function POST(request: Request) {
 
   const field = `${topic}|${rating}`;
   let stored: boolean;
+  const redis = getRedis();
   try {
     if (redis) {
       if (fullMonth === month()) {
@@ -110,6 +124,7 @@ export async function POST(request: Request) {
 async function readAll(): Promise<Record<string, number>> {
   "use cache";
   cacheLife("hours");
+  const redis = getRedis();
   if (!redis) return Object.fromEntries(memory);
   return (await redis.hgetall<Record<string, number>>(HASH)) ?? {};
 }
@@ -117,6 +132,7 @@ async function readAll(): Promise<Record<string, number>> {
 /** Totaux par thématique (comptes anonymes, mis à jour au plus toutes les heures). */
 export async function GET() {
   await connection(); // jamais prérendu au build
+  const redis = getRedis();
   const all = redis ? await readAll() : Object.fromEntries(memory);
 
   const results = [...topics]
