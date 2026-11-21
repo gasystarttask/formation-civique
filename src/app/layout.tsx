@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { BookOpen01 } from "@untitledui/icons";
 import { HeaderProgress, HeaderProgressBadge } from "@/components/progress";
 import { Search } from "@/components/search";
+import { GitHubFooterLink, GitHubLink } from "@/components/github-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { themeScript } from "@/lib/theme-script";
 import { allFicheIds, days, meta, searchIndex } from "@/lib/content";
@@ -25,13 +26,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body className="flex min-h-dvh flex-col font-sans">
         <header className="sticky top-0 z-20 border-b border-gray-200 bg-base/90 backdrop-blur">
-          <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 md:px-8">
+          <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-4 md:px-8">
             <Link href="/" className="flex items-center gap-2.5">
               <span className="flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white shadow-xs">
                 <BookOpen01 className="size-5" aria-hidden />
               </span>
               <span className="leading-tight">
-                <span className="block text-sm font-semibold text-gray-900">Formation civique</span>
+                <span className="block text-sm font-semibold whitespace-nowrap text-gray-900">Formation civique</span>
                 <span className="block text-xs text-gray-500">Fiches de révision</span>
               </span>
             </Link>
@@ -46,10 +47,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 </Link>
               ))}
             </nav>
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex items-center gap-2 sm:gap-3">
               <HeaderProgressBadge ids={allFicheIds} />
               <Search entries={searchIndex} />
               <ThemeToggle />
+              {/* Masqué sur petit mobile (place) : lien dans le pied de page */}
+              <GitHubLink className="hidden sm:flex" />
             </div>
           </div>
           <HeaderProgress days={days.map(({ slug, title, ficheIds }) => ({ slug, title, ficheIds }))} />
@@ -72,6 +75,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </a>
             . Site non officiel. Mis à jour le{" "}
             {new Date(meta.scrapedAt).toLocaleDateString("fr-FR", { dateStyle: "long" })}.
+            <div className="mt-3">
+              <GitHubFooterLink />
+            </div>
           </div>
         </footer>
       </body>

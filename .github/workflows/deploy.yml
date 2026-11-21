@@ -1,7 +1,7 @@
 name: Déploiement Vercel
 
 # Production : push sur main -> https://formation-civique.rrahajason.space
-# Preview    : pull request vers main -> URL de preview dans le résumé du job
+# Preview    : pull request vers main -> URL de preview en commentaire de la PR
 on:
   push:
     branches: [main]
@@ -15,6 +15,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write # commentaire avec le lien de preview
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -56,3 +57,31 @@ jobs:
           url=$(vercel deploy --prebuilt --archive=tgz $PROD --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Déployé : $url" >> "$GITHUB_STEP_SUMMARY"
+
+      # Un seul commentaire par PR, mis à jour à chaque déploiement.
+      # Ignoré pour Dependabot (jeton en lecture seule sur ses PR).
+      - name: Commenter le lien de preview
+        if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ steps.deploy.outputs.url }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          marker="<!-- vercel-preview -->"
+          body="$marker
+          ### Preview Vercel
+
+          | | |
+          |---|---|
+          | Lien | $URL |
+          | Commit | \`${SHA:0:7}\` |
+          | Mis à jour | $(TZ=Europe/Paris date '+%d/%m/%Y %H:%M') |"
+          id=$(gh api "repos/${{ github.repository }}/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n 1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh pr comment "$PR" --body "$body"
+          fi
