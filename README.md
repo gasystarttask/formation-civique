@@ -54,6 +54,22 @@ Sur Vercel : **Storage → Marketplace → Upstash Redis → Connect Project** ;
 `KV_REST_API_URL` / `KV_REST_API_TOKEN` sont créées automatiquement. En local, copiez
 `.env.example` en `.env.local` ; sans variables, les avis sont gardés en mémoire.
 
+## Déploiement (Vercel + GitHub Actions)
+
+`.github/workflows/deploy.yml` : push sur `main` -> production
+(https://formation-civique.rrahajason.space), pull request -> preview.
+Le déploiement Git automatique de Vercel est désactivé (`vercel.json`) pour éviter les doublons.
+
+Mise en place (une fois) :
+
+1. `npx vercel link` (crée `.vercel/project.json` avec `orgId` et `projectId`).
+2. Créer un token : https://vercel.com/account/tokens
+3. Secrets GitHub : `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
+4. Domaine : Vercel -> projet -> Settings -> Domains -> `formation-civique.rrahajason.space`,
+   puis chez le registrar DNS de `rrahajason.space` : enregistrement `CNAME formation-civique`
+   vers la valeur indiquée par Vercel.
+5. Variables Upstash : voir « Avis de fin de thématique ».
+
 ## Licence
 
 - Code : [MIT](LICENSE).

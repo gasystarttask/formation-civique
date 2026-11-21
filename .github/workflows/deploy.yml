@@ -1,0 +1,57 @@
+name: Déploiement Vercel
+
+# Production : push sur main -> https://formation-civique.rrahajason.space
+# Preview    : pull request vers main -> URL de preview dans le résumé du job
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Installer la CLI Vercel
+        run: npm install --global vercel@latest
+
+      - name: Récupérer la configuration Vercel
+        env:
+          TARGET: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+        run: vercel pull --yes --environment=$TARGET --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        env:
+          PROD: ${{ github.event_name != 'pull_request' && '--prod' || '' }}
+        run: vercel build $PROD --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Déployer
+        id: deploy
+        env:
+          PROD: ${{ github.event_name != 'pull_request' && '--prod' || '' }}
+        run: |
+          url=$(vercel deploy --prebuilt $PROD --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Déployé : $url" >> "$GITHUB_STEP_SUMMARY"
