@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import { PageSkeleton } from "@/components/skeleton";
 import { ArrowLeft, ArrowRight, LinkExternal01, Target04 } from "@untitledui/icons";
 import { AutoMarkRead, Progress, ReadMarker, ReadToggle } from "@/components/progress";
-import { Badge, Breadcrumbs, cx, FeaturedIcon } from "@/components/ui";
-import { allFicheIds, getContext, getFiche, getNeighbours } from "@/lib/content";
+import { Badge, Breadcrumbs, cx, FeaturedIcon, ReadingTime } from "@/components/ui";
+import { allFicheIds, getContext, getFiche, getNeighbours, readingMinutes } from "@/lib/content";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -52,6 +52,7 @@ async function FicheContent({ params }: Props) {
             <Badge>
               Fiche {index + 1} sur {topic.fiches.length}
             </Badge>
+            <ReadingTime minutes={readingMinutes(fiche)} />
           </div>
           <h1 className="mt-4 text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">{fiche.title}</h1>
           {fiche.description && <p className="mt-3 text-lg text-gray-600">{fiche.description}</p>}

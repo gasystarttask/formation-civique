@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ComponentProps, FC, ReactNode, SVGProps } from "react";
-import { ChevronRight, Home02 } from "@untitledui/icons";
+import { ChevronRight, Clock, Home02 } from "@untitledui/icons";
 
 type Icon = FC<SVGProps<SVGSVGElement>>;
 
@@ -27,6 +27,19 @@ export function Badge({
       )}
     >
       {children}
+    </span>
+  );
+}
+
+/* Badge durée de lecture */
+export function ReadingTime({ minutes }: { minutes: number }) {
+  return (
+    <span title={`Durée de lecture estimée : environ ${minutes} min`}>
+      <Badge>
+        <Clock className="size-3" aria-hidden />
+        <span aria-hidden>~{minutes} min de lecture</span>
+        <span className="sr-only">Lecture estimée à environ {minutes} min</span>
+      </Badge>
     </span>
   );
 }

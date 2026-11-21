@@ -21,7 +21,7 @@ type RawNode = {
   children?: RawNode[];
 };
 
-export type FicheRef = { id: string; title: string; description?: string };
+export type FicheRef = { id: string; title: string; description?: string; minutes: number };
 export type Topic = { slug: string; title: string; description?: string; fiches: FicheRef[] };
 export type Section = { slug: string; title: string; description?: string; topics: Topic[] };
 export type Day = {
@@ -60,10 +60,21 @@ const toText = (html: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+/** Vitesse de lecture moyenne d'un adulte en français (mots / minute). */
+const WORDS_PER_MINUTE = 200;
+
+/** Durée moyenne de lecture d'une fiche, en minutes (arrondie, minimum 1). */
+export function readingMinutes(f: Fiche) {
+  const text = [f.title, f.description ?? "", ...f.objectives, toText(f.html.replace(/<[^>]+>/g, " "))].join(" ");
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+}
+
 const toRef = (n: RawNode): FicheRef => ({
   id: n.ficheId!,
   title: fiches[n.ficheId!].title,
   description: n.description,
+  minutes: readingMinutes(fiches[n.ficheId!]),
 });
 
 export const days: Day[] = (data.days as (RawNode & { slug: string })[]).map((d, i) => {

@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { PageSkeleton } from "@/components/skeleton";
 import { ArrowRight, ChevronRight, LinkExternal01 } from "@untitledui/icons";
 import { Progress, ReadMarker } from "@/components/progress";
-import { Badge, Breadcrumbs, ButtonLink, FeaturedIcon } from "@/components/ui";
+import { Badge, Breadcrumbs, ButtonLink, FeaturedIcon, ReadingTime } from "@/components/ui";
 import { days, getDay } from "@/lib/content";
 import { dayIcons } from "@/lib/icons";
 
@@ -97,9 +97,12 @@ async function DayContent({ params }: Props) {
                 className="flex flex-col rounded-xl border border-gray-200 bg-base shadow-xs"
               >
                 <header className="border-b border-gray-200 px-5 py-4">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                     <h3 className="font-semibold text-gray-900">{topic.title}</h3>
-                    <Badge>{topic.fiches.length} fiches</Badge>
+                    <div className="flex flex-wrap gap-1.5">
+                      <Badge>{topic.fiches.length} fiches</Badge>
+                      <ReadingTime minutes={topic.fiches.reduce((n, f) => n + f.minutes, 0)} />
+                    </div>
                   </div>
                   <div className="mt-3">
                     <Progress ids={topic.fiches.map((f) => f.id)} label={false} />
@@ -113,8 +116,9 @@ async function DayContent({ params }: Props) {
                         className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-gray-50"
                       >
                         <ReadMarker id={f.id} number={i + 1} />
-                        <span className="flex-1 text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                          {f.title}
+                        <span className="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{f.title}</span>
+                          <ReadingTime minutes={f.minutes} />
                         </span>
                         <ChevronRight className="size-4 shrink-0 text-gray-300 group-hover:text-gray-500" aria-hidden />
                       </Link>
