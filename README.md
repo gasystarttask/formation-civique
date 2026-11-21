@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Formation civique — fiches de révision
 
-## Getting Started
+App Next.js (App Router, TypeScript, Tailwind CSS v4) qui reprend les
+[fiches par journée](https://formation-civique.interieur.gouv.fr/fiches-par-journ%C3%A9e/)
+de la formation civique (licence etalab-2.0) avec une navigation simplifiée,
+dans le style du design system Untitled UI.
 
-First, run the development server:
+## Fonctionnalités
+
+- Parcours Journée → thématique → thème → fiche, fil d'Ariane.
+- Fiche : objectifs, contenu, « Pour aller plus loin », fiche précédente/suivante, sommaire du thème.
+- Recherche instantanée (⌘K / Ctrl+K), insensible aux accents.
+- Suivi de progression (« Marquer comme lue »), stocké dans le navigateur.
+- Thème clair, sombre ou système (choix mémorisé, sans flash au chargement).
+- Pages entièrement générées à la compilation (227 fiches + 4 journées + accueil).
+
+## Commandes
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev       # http://localhost:3000
+npm run scrape    # re-télécharge le contenu -> src/data/content.json (cache : .cache/)
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Pour forcer un nouveau téléchargement, supprimez `.cache/` avant `npm run scrape`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `scripts/scrape.mjs` : extraction et nettoyage du HTML du site officiel.
+- `src/lib/content.ts` : modèle de données et index de recherche.
+- `src/components/` : composants UI (Badge, FeaturedIcon, Breadcrumbs, boutons, recherche, progression).
+- `src/app/globals.css` : tokens Untitled UI (couleurs, ombres) et style du contenu des fiches.
