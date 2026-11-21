@@ -22,9 +22,9 @@ function markAsked(topic: string) {
 }
 
 const choices: { value: Rating; label: string; icon: typeof FaceSad; tone: string }[] = [
-  { value: "triste", label: "Pas satisfait", icon: FaceSad, tone: "hover:bg-error-50 hover:text-error-700 hover:ring-error-200" },
-  { value: "mitige", label: "Mitigé", icon: FaceNeutral, tone: "hover:bg-warning-50 hover:text-warning-700 hover:ring-warning-200" },
-  { value: "content", label: "Satisfait", icon: FaceSmile, tone: "hover:bg-success-50 hover:text-success-700 hover:ring-success-200" },
+  { value: "triste", label: "Pas satisfait", icon: FaceSad, tone: "bg-error-50 text-error-700 ring-error-200 hover:bg-error-100" },
+  { value: "mitige", label: "Mitigé", icon: FaceNeutral, tone: "bg-yellow-50 text-yellow-700 ring-yellow-200 hover:bg-yellow-100" },
+  { value: "content", label: "Satisfait", icon: FaceSmile, tone: "bg-success-50 text-success-700 ring-success-200 hover:bg-success-100" },
 ];
 
 type State = "idle" | "sending" | "done" | "error";
@@ -111,7 +111,7 @@ export function TopicFeedback({ topic, title }: { topic: string; title: string }
                     disabled={state === "sending"}
                     onClick={() => send(value)}
                     className={cx(
-                      "flex flex-col items-center gap-2 rounded-xl px-2 py-4 text-sm font-semibold text-gray-700 ring-1 ring-gray-200 ring-inset transition-colors disabled:opacity-50",
+                      "flex flex-col items-center gap-2 rounded-xl px-2 py-4 text-sm font-semibold ring-1 ring-inset transition-colors disabled:opacity-50",
                       tone,
                     )}
                   >
