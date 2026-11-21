@@ -1,0 +1,54 @@
+name: Nettoyage des previews
+
+# À la fermeture d'une PR (fusionnée ou non) :
+# - supprime les déploiements de preview Vercel de la branche ;
+# - marque les déploiements GitHub « preview » de la branche comme inactifs (périmés).
+on:
+  pull_request:
+    types: [closed]
+  # Lancement manuel pour une branche déjà fusionnée (anciennes previews)
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branche dont les previews sont à supprimer
+        required: true
+
+permissions:
+  deployments: write
+  contents: read
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer la CLI Vercel
+        run: npm install --global vercel@latest
+
+      - name: Supprimer les previews et les marquer périmées
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.head_ref || inputs.branch }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          repo="${{ github.repository }}"
+          ids=$(gh api --paginate "repos/$repo/deployments?environment=preview&ref=$BRANCH" --jq '.[].id')
+          if [ -z "$ids" ]; then
+            echo "Aucune preview pour $BRANCH"
+            exit 0
+          fi
+          for id in $ids; do
+            # URL Vercel enregistrée dans les statuts du déploiement GitHub
+            for url in $(gh api "repos/$repo/deployments/$id/statuses" --jq '[.[].environment_url | select(. != null and . != "")] | unique | .[]'); do
+              echo "Suppression Vercel : $url"
+              vercel remove "$url" --yes --token="$VERCEL_TOKEN" || echo "::warning::Suppression impossible : $url (déjà supprimée ?)"
+            done
+            gh api -X POST "repos/$repo/deployments/$id/statuses" -f state=inactive \
+              -f description="Preview supprimée après fermeture de la PR" > /dev/null
+            echo "Déploiement GitHub $id marqué inactif"
+          done
+          echo "Previews de \`$BRANCH\` supprimées et marquées périmées." >> "$GITHUB_STEP_SUMMARY"
