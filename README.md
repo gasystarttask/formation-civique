@@ -31,3 +31,8 @@ Pour forcer un nouveau téléchargement, supprimez `.cache/` avant `npm run scra
 - `src/lib/content.ts` : modèle de données et index de recherche.
 - `src/components/` : composants UI (Badge, FeaturedIcon, Breadcrumbs, boutons, recherche, progression).
 - `src/app/globals.css` : tokens Untitled UI (couleurs, ombres) et style du contenu des fiches.
+
+## Licence
+
+- Code : [MIT](LICENSE).
+- Contenu des fiches (`src/data/content.json`) : © ministère de l'Intérieur, [Licence Ouverte etalab-2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/). La licence MIT ne s'applique pas à ce contenu.
