@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ArrowRight } from "@untitledui/icons";
+import { ArrowRight, ClipboardCheck } from "@untitledui/icons";
 import { GlobalProgress, Progress } from "@/components/progress";
 import { HeroFlag } from "@/components/hero-flag";
 import { Search } from "@/components/search";
 import { Badge, FeaturedIcon } from "@/components/ui";
+import { EXAM_RULES, exams } from "@/data/examens";
 import { days, searchIndex } from "@/lib/content";
 import { dayIcons } from "@/lib/icons";
 
@@ -72,6 +73,24 @@ export default function Home() {
             );
           })}
         </ul>
+
+        <Link
+          href="/examens"
+          className="group mt-12 flex flex-col gap-5 rounded-xl border border-gray-200 bg-base p-6 shadow-xs transition hover:border-brand-300 hover:shadow-md sm:flex-row sm:items-center"
+        >
+          <FeaturedIcon icon={ClipboardCheck} size="lg" />
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-gray-900">Testez-vous avec les examens blancs</h2>
+            <p className="mt-1 text-gray-600">
+              {exams.length} examens de {EXAM_RULES.questions} questions sur toutes les thématiques, chronométrés{" "}
+              {EXAM_RULES.minutes} min, avec correction et fiches à réviser.
+            </p>
+          </div>
+          <ArrowRight
+            className="size-5 text-gray-400 transition group-hover:translate-x-0.5 group-hover:text-brand-600"
+            aria-hidden
+          />
+        </Link>
       </section>
     </main>
   );
