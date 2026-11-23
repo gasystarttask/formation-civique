@@ -93,8 +93,15 @@ export function ExamRunner({ exam, ficheTitles }: { exam: Exam; ficheTitles: Rec
     mounted.current = true;
   }, [phase]);
 
-  const choose = (choice: number) =>
-    setAnswers((prev) => prev.map((a, i) => (i === index ? choice : a)));
+  const choose = (choice: number) => {
+    const next = answers.map((a, i) => (i === index ? choice : a));
+    setAnswers(next);
+    if (index !== total - 1) return;
+    // Réponse à la dernière question : fin de l'examen et arrêt du chrono,
+    // sauf s'il reste des questions sans réponse (confirmation).
+    if (next.every((a) => a !== null)) finish(next);
+    else setConfirming(true);
+  };
 
   if (phase === "intro") {
     return (
