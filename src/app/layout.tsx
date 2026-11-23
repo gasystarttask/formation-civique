@@ -36,7 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <span className="block text-xs text-gray-500">Fiches de révision</span>
               </span>
             </Link>
-            <nav aria-label="Journées" className="ml-4 hidden items-center gap-1 lg:flex">
+            <nav aria-label="Journées" className="ml-4 hidden items-center gap-1 xl:flex">
               {days.map((d) => (
                 <Link
                   key={d.slug}
@@ -46,6 +46,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   {d.title}
                 </Link>
               ))}
+              <Link
+                href="/examens"
+                className="rounded-md px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+              >
+                Examens blancs
+              </Link>
             </nav>
             <div className="ml-auto flex items-center gap-2 sm:gap-3">
               <HeaderProgressBadge ids={allFicheIds} />
@@ -75,7 +81,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </a>
             . Site non officiel. Mis à jour le{" "}
             {new Date(meta.scrapedAt).toLocaleDateString("fr-FR", { dateStyle: "long" })}.
-            <div className="mt-3">
+            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+              <Link href="/examens" className="font-medium text-gray-700 underline underline-offset-2">
+                Examens blancs
+              </Link>
               <GitHubFooterLink />
             </div>
           </div>
